@@ -52,9 +52,8 @@ COPY requirements.txt .
 # Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Install Playwright browsers
-RUN playwright install chromium && \
-    playwright install-deps chromium
+# Install Playwright system dependencies as root (required)
+RUN playwright install-deps chromium
 
 # Copy application source code
 COPY src/ src/
@@ -65,6 +64,12 @@ RUN mkdir -p src/logs && \
 
 # Switch to non-root user
 USER appuser
+
+# Install Playwright browsers as appuser
+RUN playwright install chromium
+
+# Set Playwright environment variables
+ENV PLAYWRIGHT_BROWSERS_PATH=/home/appuser/.cache/ms-playwright
 
 # Set production environment variables
 ENV ENVIRONMENT=production \

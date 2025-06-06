@@ -8,6 +8,20 @@ This guide will help you deploy the LlegarCasa Scraper application to Render usi
 2. Your code pushed to a Git repository (GitHub, GitLab, or Bitbucket)
 3. Docker installed locally for testing (optional)
 
+## Quick Start
+
+### Test Locally First (Recommended)
+
+Before deploying to Render, test the Docker container locally:
+
+```bash
+# Make the test script executable and run it
+chmod +x test_docker.sh
+./test_docker.sh
+```
+
+This will verify that Playwright browsers are properly installed and accessible.
+
 ## Deployment Steps
 
 ### 1. Test Locally (Optional but Recommended)
@@ -134,12 +148,17 @@ The application includes comprehensive health checks:
 - Optimize the number of concurrent browser instances
 - Consider adding swap space
 
-#### 3. Browser Launch Failures
-**Error**: Browser fails to start in headless mode
-**Solutions**:
-- Ensure `SCRAPER_HEADLESS_MODE=true`
-- Check that all browser dependencies are installed
-- Verify the container has sufficient resources
+#### 3. Browser Launch Failures ⚠️ **FIXED**
+**Error**: `Executable doesn't exist at /home/appuser/.cache/ms-playwright/chromium_headless_shell-1169/chrome-linux/headless_shell`
+
+**Root Cause**: This was caused by installing Playwright browsers as root user, but running the application as `appuser`.
+
+**Solution Applied**: 
+- System dependencies (`playwright install-deps`) are installed as root (required for permissions)
+- Browser binaries (`playwright install`) are installed as `appuser` 
+- `PLAYWRIGHT_BROWSERS_PATH` is set to the correct user directory
+
+**Verification**: Use the included `test_docker.sh` script to verify the fix locally before deploying.
 
 #### 4. Startup Timeouts
 **Error**: Service fails health checks during startup
