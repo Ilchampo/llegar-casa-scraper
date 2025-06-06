@@ -1,0 +1,37 @@
+services:
+  - type: web
+    name: llegar-casa-scraper
+    runtime: docker
+    plan: standard
+    region: oregon
+    
+    buildCommand: docker build -t llegar-casa-scraper .
+    
+    healthCheckPath: /health
+    
+    envVars:
+      - key: ENVIRONMENT
+        value: production
+      - key: DEBUG
+        value: "false"
+      - key: SCRAPER_HEADLESS_MODE
+        value: "true"
+      - key: SCRAPER_SAVE_SCREENSHOTS
+        value: "false"
+      - key: SCRAPER_DEBUG_MODE
+        value: "false"
+      - key: CORS_ORIGINS
+        value: '["https://llegar-casa-backend.onrender.com"]'
+      - key: APP_NAME
+        value: "LlegarCasa Scrapper"
+      - key: APP_VERSION
+        value: "1.0.0"
+    
+    numInstances: 1
+    
+    autoDeploy: true
+    
+    disk:
+      name: llegar-casa-data
+      sizeGB: 1
+      mountPath: /app/src/logs 
