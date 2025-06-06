@@ -40,8 +40,9 @@ RUN apt-get update && apt-get install -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Create non-root user for security
-RUN groupadd -r appuser && useradd -r -g appuser appuser
+# Create non-root user with home directory
+RUN groupadd -r appuser && \
+    useradd -r -g appuser -d /home/appuser -m -s /bin/bash appuser
 
 # Set working directory
 WORKDIR /app
